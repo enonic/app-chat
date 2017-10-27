@@ -1,6 +1,12 @@
+var mustacheLib = require('/lib/xp/mustache');
+var view = resolve('main.html');
+
 exports.get = function (req) {
+    var body = mustacheLib.render(view, {
+        title: 'Chat App'
+    });
     return {
-        body: '<html><body><h1>Hello world!</h1></body></html>',
+        body: body,
         contentType: 'text/html'
     };
 };
