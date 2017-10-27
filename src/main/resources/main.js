@@ -3,7 +3,7 @@ var view = resolve('main.html');
 
 exports.get = function (req) {
     var body = mustacheLib.render(view, {
-        title: 'Chat App'
+        text: 'Hello! I am a template'
     });
     return {
         body: body,
