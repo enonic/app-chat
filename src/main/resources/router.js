@@ -12,7 +12,8 @@ router.get('/', function (req) {
         body: mustacheLib.render(mainTemplate, {
             appUrl: getAppUrl(),
             baseUrl: getBaseUrl(),
-            serviceUrl: portalLib.serviceUrl({service: ''})
+            serviceUrl: portalLib.serviceUrl({service: ''}),
+            loginUrl: portalLib.loginUrl({redirect: portalLib.url({path: '/app/' + app.name, type: 'absolute'})})
         }),
         contentType: 'text/html'
     };

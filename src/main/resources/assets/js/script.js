@@ -28,6 +28,18 @@ function onSend() {
         });
 }
 
+function checkAuthenticated() {
+    fetch(config.serviceUrl + '/authenticated')
+        .then(response => response.json())
+        .then(json => {
+            if (!json.authenticated) {
+                location = config.loginUrl;
+            } else {
+                retrieveMessages();
+            }
+        });
+}
+
 document.getElementById('send-button')
     .addEventListener('click', onSend);
 
@@ -38,6 +50,7 @@ document.getElementById('message-textarea')
         }
     });
 
-retrieveMessages();
+checkAuthenticated();
+
 
 
