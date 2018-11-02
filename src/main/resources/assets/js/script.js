@@ -37,6 +37,11 @@ function checkAuthenticated() {
             } else {
                 retrieveMessages();
             }
+        })
+        .catch(error => {
+            const messageElement = document.createElement('span');
+            messageElement.innerHTML = '<b>ERROR - ' + error.message + '</b>';
+            document.getElementById('main').appendChild(messageElement);
         });
 }
 
