@@ -30,4 +30,7 @@ function onSend() {
 
 document.getElementById('send-button')
     .addEventListener("click", onSend);
+
 retrieveMessages();
+
+
