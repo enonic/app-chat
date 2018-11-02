@@ -29,7 +29,14 @@ function onSend() {
 }
 
 document.getElementById('send-button')
-    .addEventListener("click", onSend);
+    .addEventListener('click', onSend);
+
+document.getElementById('message-textarea')
+    .addEventListener('keyup', (event) => {
+        if ('Enter' === event.key) {
+            onSend(event);
+        }
+    });
 
 retrieveMessages();
 
