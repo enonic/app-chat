@@ -1,6 +1,6 @@
 function retrieveMessages() {
     document.getElementById('main').innerHTML = '';
-    fetch(serviceBaseUrl + '/get-messages')
+    fetch(config.serviceUrl + '/get-messages')
         .then(response => response.json())
         .then(json => {
             json.forEach(message => {
@@ -16,7 +16,7 @@ function onSend() {
     document.getElementById('message-textarea').value = '';
 
 
-    fetch(serviceBaseUrl + '/send-message', {
+    fetch(config.serviceUrl + '/send-message', {
         method: 'POST',
         body: JSON.stringify({
             message: message

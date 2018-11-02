@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <title>Groupy</title>
+    <link rel="manifest" href="{{baseUrl}}/manifest.json">
+    <link rel="shortcut icon" href="{{baseUrl}}/icons/favicon.png">
+    <link rel="stylesheet" type="text/css" href="{{appUrl}}/style/main.css">
+    <script>
+        const config = {
+            appUrl: "{{appUrl}}",
+            baseUrl: "{{baseUrl}}",
+            serviceUrl: "{{serviceUrl}}"
+        };
+    </script>
+</head>
+
+<body>
+<header>
+    <span>Chat App</span>
+</header>
+<main id="main">
+</main>
+<footer>
+    <textarea id="message-textarea" class="textarea" autofocus></textarea>
+    <div id="send-button" class="send-button">Send</div>
+</footer>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('{{baseUrl}}/sw.js', {
+                scope: "{{baseUrl}}"
+            }).then((registration) => console.log('Registration successful, scope is:', registration.scope))
+                .catch((error) => console.log('Service worker registration failed, error:', error));
+        });
+    }
+</script>
+<script src="{{baseUrl}}/js/script.js"></script>
+</body>
+
+</html>

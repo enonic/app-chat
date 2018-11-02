@@ -1,0 +1,14 @@
+{
+  "name": "Chat",
+  "short_name": "Chat",
+  "start_url": "{{startUrl}}",
+  "display": "standalone",
+  "description": "App Chat!",
+  "icons": [
+    {
+      "src": "icons/favicon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}
