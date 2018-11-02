@@ -12,8 +12,8 @@ function retrieveMessages() {
 }
 
 function onSend() {
-    const message = document.getElementById('send-button').value;
-    document.getElementById('send-button').value = '';
+    const message = document.getElementById('message-textarea').value;
+    document.getElementById('message-textarea').value = '';
 
 
     fetch(serviceBaseUrl + '/send-message', {

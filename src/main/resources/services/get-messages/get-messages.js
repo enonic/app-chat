@@ -1,12 +1,9 @@
-var repoLib = require('/lib/xp/repo');
-var nodeLib = require('/lib/xp/node');
+var messageLib = require('/lib/chat/message');
 
 exports.get = function () {
+    var messages = messageLib.getMessages();
     return {
         contentType: 'application/json',
-        body: JSON.stringify([
-            {content: 'message1'},
-            {content: 'message2'}
-        ])
+        body: JSON.stringify(messages)
     };
 };

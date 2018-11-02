@@ -8,10 +8,25 @@ function create(message) {
     repoConn.create({
         _parentPath: '/channels/demo',
         author: userKey,
-        message: message
+        content: message
     });
     //TODO
     repoConn.refresh('SEARCH');
 }
 
+function getMessages() {
+    var repoConn = repoLib.connect();
+    return repoConn.findChildren({
+        parentKey: '/channels/demo',
+        count: 50
+    }).hits.map(function (hit) {
+        var node = repoConn.get(hit.id);
+        return {
+            authorName: authLib.getPrincipal(node.author).displayName,
+            content: node.content
+        }
+    });
+}
+
 exports.create = create;
+exports.getMessages = getMessages;
