@@ -5,7 +5,7 @@ function retrieveMessages() {
         .then(json => {
             json.forEach(message => {
                 const messageElement = document.createElement('span');
-                messageElement.innerHTML = message.content;
+                messageElement.innerHTML = '<b>' + message.authorName + ':</b> ' + message.content;
                 document.getElementById('main').appendChild(messageElement);
             });
         });
