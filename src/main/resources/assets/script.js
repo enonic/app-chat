@@ -1,4 +1,5 @@
 function retrieveMessages() {
+    document.getElementById('main').innerHTML = '';
     fetch(serviceBaseUrl + '/get-messages')
         .then(response => response.json())
         .then(json => {
@@ -10,12 +11,10 @@ function retrieveMessages() {
         });
 }
 
-
-document.getElementById('send-button')
-    .addEventListener("click", onSend);
-
 function onSend() {
     const message = document.getElementById('send-button').value;
+    document.getElementById('send-button').value = '';
+
 
     fetch(serviceBaseUrl + '/send-message', {
         method: 'POST',
@@ -29,4 +28,6 @@ function onSend() {
         });
 }
 
-
+document.getElementById('send-button')
+    .addEventListener("click", onSend);
+retrieveMessages();
