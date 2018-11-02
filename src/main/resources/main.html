@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Chat App</title>
-        <link rel="stylesheet" type="text/css" href="{{appUrl}}/style.css">
-        <script>
-            var serviceBaseUrl="{{serviceBaseUrl}}";
-        </script>
-        <script src="{{appUrl}}/script.js"></script>
-    </head>
-    <body>
-        <header>
-            <span>Chat App</span>
-        </header>
-        <main id="main">
-        </main>
-        <footer>
-            <textarea class="textarea" autofocus></textarea>
-            <div class="send-button">Send</div>
-        </footer>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Chat App</title>
+    <link rel="stylesheet" type="text/css" href="{{appUrl}}/style.css">
+    <script>
+        var serviceBaseUrl = "{{serviceBaseUrl}}";
+    </script>
+</head>
+<body>
+<header>
+    <span>Chat App</span>
+</header>
+<main id="main">
+</main>
+<footer>
+    <textarea id="message-textarea" class="textarea" autofocus></textarea>
+    <div id="send-button" class="send-button">Send</div>
+</footer>
+<script src="{{appUrl}}/script.js"></script>
+</body>
 </html>
