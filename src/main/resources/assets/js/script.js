@@ -1,14 +1,33 @@
 function retrieveMessages() {
     document.getElementById('main').innerHTML = '';
-    fetch(config.serviceUrl + '/get-messages')
-        .then(response => response.json())
-        .then(json => {
-            json.forEach(message => {
-                const messageElement = document.createElement('span');
-                messageElement.innerHTML = '<b>' + message.authorName + ':</b> ' + message.content;
-                document.getElementById('main').appendChild(messageElement);
-            });
-        });
+
+    const api = getApi();
+    if (api === 'graphql') {
+        fetch(config.serviceUrl + '/graphql', {
+            method: 'POST',
+            body: "{\"query\":\"{messages{authorName content}}\\n\"}"
+        })
+            .then(response => response.json())
+            .then(json => json.data.messages)
+            .then(handleRetrievedMessages);
+    } else {
+        fetch(config.serviceUrl + '/get-messages')
+            .then(response => response.json())
+            .then(handleRetrievedMessages);
+    }
+}
+
+function handleRetrievedMessages(messages) {
+    messages.forEach(message => {
+        const messageElement = document.createElement('span');
+        messageElement.innerHTML = '<b>' + message.authorName + ':</b> ' + message.content;
+        document.getElementById('main').appendChild(messageElement);
+    });
+}
+
+function getApi() {
+    return new URL(window.location).searchParams.get('api');
+
 }
 
 function onSend() {

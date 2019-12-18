@@ -9,12 +9,7 @@ exports.webSocketEvent = function (event) {
         webSocketLib.addToGroup('chat', event.session.id);
     }
 
-    // if (event.type == 'message') {
-    //     webSocketLib.sendToGroup('chat', event.message);
-    // }
-
     if (event.type == 'close') {
         webSocketLib.removeFromGroup('chat', event.session.id);
     }
-
 };

@@ -5,7 +5,7 @@ plugins {
 }
 
 app {
-    name = "${projectName}"
+    name = "${appName}"
     displayName = "${displayName}"
     vendorName = "${vendorName}"
     vendorUrl = "${vendorUrl}"
@@ -24,6 +24,7 @@ dependencies {
     include "com.enonic.xp:lib-websocket:${xpVersion}"
     include "com.enonic.lib:lib-mustache:2.0.0"
     include "com.enonic.lib:lib-router:2.1.0"
+    include "com.enonic.lib:lib-graphql:2.0.0-SNAPSHOT"
 }
 
 repositories {
