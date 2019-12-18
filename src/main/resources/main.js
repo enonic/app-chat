@@ -1,6 +1,1 @@
-var authLib = require('/lib/xp/auth');
-var router = require('./router.js');
-
-exports.get = function (req) {
-    return router.dispatch(req);
-};
+require('/lib/chat/repo').init();

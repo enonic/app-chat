@@ -1,4 +1,4 @@
-var mustacheLib = require('/lib/xp/mustache');
+var mustacheLib = require('/lib/mustache');
 var portalLib = require('/lib/xp/portal');
 var router = require('/lib/router')();
 var mainTemplate = resolve("main-template.html");
@@ -13,7 +13,7 @@ router.get('/', function (req) {
             appUrl: getAppUrl(),
             baseUrl: getBaseUrl(),
             serviceUrl: portalLib.serviceUrl({service: ''}),
-            loginUrl: portalLib.loginUrl({redirect: portalLib.url({path: '/app/' + app.name, type: 'absolute'})})
+            loginUrl: portalLib.loginUrl({redirect: portalLib.url({path: '/webapp/' + app.name, type: 'absolute'})})
         }),
         contentType: 'text/html'
     };
@@ -47,7 +47,7 @@ function getBaseUrl() {
 }
 
 function getAppUrl() {
-    return portalLib.url({path: '/app/' + app.name});
+    return portalLib.url({path: '/webapp/' + app.name});
 }
 
 function endWithSlash(url) {
