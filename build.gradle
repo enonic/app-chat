@@ -21,6 +21,7 @@ dependencies {
     include "com.enonic.xp:lib-node:${xpVersion}"
     include "com.enonic.xp:lib-portal:${xpVersion}"
     include "com.enonic.xp:lib-repo:${xpVersion}"
+    include "com.enonic.xp:lib-websocket:${xpVersion}"
     include "com.enonic.lib:lib-mustache:2.0.0"
     include "com.enonic.lib:lib-router:2.1.0"
 }

@@ -41,6 +41,12 @@ router.get('/sw.js', function () {
     };
 });
 
+router.get('/ws', function (req) {
+    return {
+        webSocket: {}
+    };
+});
+
 function getBaseUrl() {
     var appUrl = getAppUrl();
     return endWithSlash(appUrl) ? appUrl.substring(0, appUrl.length - 1) : appUrl;

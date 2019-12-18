@@ -45,6 +45,19 @@ function checkAuthenticated() {
         });
 }
 
+function createWebSocket() {
+    const socket = new WebSocket('ws://localhost:8080' + config.appUrl + '/ws'); //TODO
+
+    socket.addEventListener('open', function (event) {
+        socket.send('Websocket opened');
+    });
+
+    socket.addEventListener('message', function (event) {
+        console.log('Event received. Reloading message', event.data);
+        retrieveMessages();
+    });
+}
+
 document.getElementById('send-button')
     .addEventListener('click', onSend);
 
@@ -57,5 +70,6 @@ document.getElementById('message-textarea')
 
 checkAuthenticated();
 
+createWebSocket();
 
 
