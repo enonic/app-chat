@@ -2,18 +2,14 @@ var messageLib = require('/lib/chat/message');
 var webSocketLib = require('/lib/xp/websocket');
 
 exports.post = function (req) {
-
-    var body = JSON.parse(req.body);
-
-    messageLib.create(body.message);
-
-    webSocketLib.sendToGroup('chat', body.message);
+    const body = JSON.parse(req.body);
+    const createdMessageNode = messageLib.create(body.message);
+    const message = messageLib.getMessage(createdMessageNode._id);
+    const messageJson = JSON.stringify(message);
+    webSocketLib.sendToGroup('rest', messageJson);
 
     return {
         contentType: 'application/json',
-        body: JSON.stringify([
-            {content: 'message1'},
-            {content: 'message2'}
-        ])
+        body: messageJson
     };
 };

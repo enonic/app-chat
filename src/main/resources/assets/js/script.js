@@ -18,11 +18,13 @@ function retrieveMessages() {
 }
 
 function handleRetrievedMessages(messages) {
-    messages.forEach(message => {
-        const messageElement = document.createElement('span');
-        messageElement.innerHTML = '<b>' + message.authorName + ':</b> ' + message.content;
-        document.getElementById('main').appendChild(messageElement);
-    });
+    messages.forEach(handleRetrievedMessage);
+}
+
+function handleRetrievedMessage(message) {
+    const messageElement = document.createElement('span');
+    messageElement.innerHTML = '<b>' + message.authorName + ':</b> ' + message.content;
+    document.getElementById('main').prepend(messageElement);
 }
 
 function getApi() {
@@ -40,11 +42,7 @@ function onSend() {
         body: JSON.stringify({
             message: message
         })
-    })
-        .then(response => response.json())
-        .then(json => {
-            retrieveMessages();
-        });
+    });
 }
 
 function checkAuthenticated() {
@@ -66,14 +64,29 @@ function checkAuthenticated() {
 
 function createWebSocket() {
     const socket = new WebSocket('ws://localhost:8080' + config.appUrl + '/ws'); //TODO
+    socket.addEventListener('message', function (event) {
+        console.log('WS - Event received: ', event.data);
+        handleRetrievedMessage(JSON.parse(event.data));
+    });
+}
+
+function createGraphQLWebSocket() {
+    const socket = new WebSocket('ws://localhost:8080' + config.appUrl + '/ws-graphql'); //TODO
 
     socket.addEventListener('open', function (event) {
-        socket.send('Websocket opened');
+        console.log("WS - GraphQL - Web socket opened");
+
+        var query = 'subscription MessageSubscription { messages { authorName content } }';
+        var graphqlMsg = {
+            query: query,
+            variables: {}
+        };
+        socket.send(JSON.stringify(graphqlMsg));
     });
 
     socket.addEventListener('message', function (event) {
-        console.log('Event received. Reloading message', event.data);
-        retrieveMessages();
+        console.log('"WS - GraphQL - Event received:', event.data);
+        handleRetrievedMessage(JSON.parse(event.data));
     });
 }
 
@@ -89,6 +102,10 @@ document.getElementById('message-textarea')
 
 checkAuthenticated();
 
-createWebSocket();
+if (getApi() === 'graphql') {
+    createGraphQLWebSocket();
+} else {
+    createWebSocket();
+}
 
 

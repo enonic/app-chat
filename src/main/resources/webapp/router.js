@@ -43,7 +43,21 @@ router.get('/sw.js', function () {
 
 router.get('/ws', function (req) {
     return {
-        webSocket: {}
+        webSocket: {
+            data: {
+                group: 'rest'
+            }
+        }
+    };
+});
+
+router.get('/ws-graphql', function (req) {
+    return {
+        webSocket: {
+            data: {
+                group: 'graphql'
+            }
+        }
     };
 });
 

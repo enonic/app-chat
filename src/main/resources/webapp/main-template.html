@@ -28,14 +28,14 @@
     <div id="send-button" class="send-button">Send</div>
 </footer>
 <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-            navigator.serviceWorker.register('{{baseUrl}}/sw.js', {
-                scope: "{{baseUrl}}"
-            }).then((registration) => console.log('Registration successful, scope is:', registration.scope))
-                .catch((error) => console.log('Service worker registration failed, error:', error));
-        });
-    }
+    /* if ('serviceWorker' in navigator) {
+         window.addEventListener('load', function () {
+             navigator.serviceWorker.register('{{baseUrl}}/sw.js', {
+                 scope: "{{baseUrl}}"
+             }).then((registration) => console.log('Registration successful, scope is:', registration.scope))
+                 .catch((error) => console.log('Service worker registration failed, error:', error));
+         });
+     }*/
 </script>
 <script src="{{baseUrl}}/js/script.js"></script>
 </body>
