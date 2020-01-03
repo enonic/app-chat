@@ -86,7 +86,7 @@ function createGraphQLWebSocket() {
 
     socket.addEventListener('message', function (event) {
         console.log('"WS - GraphQL - Event received:', event.data);
-        handleRetrievedMessage(JSON.parse(event.data));
+        handleRetrievedMessage(JSON.parse(event.data).data.messages);
     });
 }
 

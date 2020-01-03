@@ -1,5 +1,6 @@
 var repoLib = require('/lib/chat/repo');
 var authLib = require('/lib/xp/auth');
+var contextLib = require('/lib/xp/context');
 
 
 function create(message) {
@@ -34,9 +35,15 @@ function getMessage(key) {
     var repoConn = repoLib.connect();
     var node = repoConn.get(key);
     return {
-        authorName: authLib.getPrincipal(node.author).displayName,
+        authorName: getPrincipal(node.author).displayName,
         content: node.content
     }
+}
+
+function getPrincipal(key) {
+    return contextLib.run({
+        principals: ['role:system.admin']
+    }, () => authLib.getPrincipal(key));
 }
 
 exports.create = create;
