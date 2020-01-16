@@ -24,7 +24,38 @@ var rootQueryType = graphQlLib.createObjectType({
     }
 });
 
-var messagePublishers = [];
+// var messagePublishers = [];
+// eventLib.listener({
+//     type: 'node.created',
+//     callback: function (event) {
+//         log.debug('Event - node.created: ' + JSON.stringify(event));
+//         const id = event.data.nodes[0].id;
+//         const message = messageLib.getMessage(id);
+//         if (message) {
+//             const publishers = Java.synchronized(() => messagePublishers.slice(0), messagePublishers)();
+//             log.debug('Event - Sending to [' + publishers.length + '] publishers: ' + JSON.stringify(message));
+//             publishers.forEach(publisher => publisher.onNext(message));
+//         }
+//     }
+// });
+
+// var rootSubscriptionType = graphQlLib.createObjectType({
+//     name: 'Subscription',
+//     fields: {
+//         messages: {
+//             type: messageType,
+//             resolve: () => {
+//                 log.debug('Creating publisher');
+//                 const publisher = graphQlLib.createSingleSubscriberPublisher();
+//                 Java.synchronized(() => messagePublishers.push(publisher), messagePublishers)();
+//                 return publisher;
+//             }
+//         }
+//     }
+// });
+
+
+var emitters = [];
 eventLib.listener({
     type: 'node.created',
     callback: function (event) {
@@ -32,12 +63,13 @@ eventLib.listener({
         const id = event.data.nodes[0].id;
         const message = messageLib.getMessage(id);
         if (message) {
-            const publishers = Java.synchronized(() => messagePublishers.slice(0), messagePublishers)();
-            log.debug('Event - Sending to [' + publishers.length + '] publishers: ' + JSON.stringify(message));
-            publishers.forEach(publisher => publisher.onNext(message));
+            const currentEmitters = Java.synchronized(() => emitters.slice(0), emitters)();
+            log.debug('Event - Sending to [' + currentEmitters.length + '] publishers: ' + JSON.stringify(message));
+            currentEmitters.forEach(emitter => emitter.onNext(message));
         }
     }
 });
+
 
 var rootSubscriptionType = graphQlLib.createObjectType({
     name: 'Subscription',
@@ -46,8 +78,12 @@ var rootSubscriptionType = graphQlLib.createObjectType({
             type: messageType,
             resolve: () => {
                 log.debug('Creating publisher');
-                const publisher = graphQlLib.createSingleSubscriberPublisher();
-                Java.synchronized(() => messagePublishers.push(publisher), messagePublishers)();
+                const publisher = graphQlLib.createOnSubscribePublisher(emitter => {
+                    Java.synchronized(() => emitters.push(emitter), emitters)();
+                    // emitter.setDisposable(() => {
+                    //
+                    // });
+                });
                 return publisher;
             }
         }
