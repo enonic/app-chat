@@ -24,17 +24,17 @@ var rootQueryType = graphQlLib.createObjectType({
     }
 });
 
-
-var messagePublisher = graphQlLib.createPublisher({});
+var messagePublishers = [];
 eventLib.listener({
     type: 'node.created',
     callback: function (event) {
-        log.info(JSON.stringify(event));
+        log.debug('Event - node.created: ' + JSON.stringify(event));
         const id = event.data.nodes[0].id;
         const message = messageLib.getMessage(id);
-        log.info('message:' + JSON.stringify(message));
         if (message) {
-            messagePublisher.offer(message);
+            const publishers = Java.synchronized(() => messagePublishers.slice(0), messagePublishers)();
+            log.debug('Event - Sending to [' + publishers.length + '] publishes: ' + JSON.stringify(message));
+            publishers.forEach(publisher => publisher.onNext(message));
         }
     }
 });
@@ -44,14 +44,43 @@ var rootSubscriptionType = graphQlLib.createObjectType({
     fields: {
         messages: {
             type: messageType,
-            resolve: () => messagePublisher
-        },
-        messages2: {
-            type: messageType,
-            resolve: () => messagePublisher
+            resolve: () => {
+                log.debug('Creating publisher');
+                const publisher = graphQlLib.createSingleSubscriberPublisher();
+                Java.synchronized(() => messagePublishers.push(publisher), messagePublishers)();
+                return publisher;
+            }
         }
     }
 });
+
+
+// var rootSubscriptionType = graphQlLib.createObjectType({
+//     name: 'Subscription',
+//     fields: {
+//         messages: {
+//             type: messageType,
+//             resolve: () => {
+//                 const publisher = graphQlLib.createOnSubscribePublisher(emitter => {
+//                     eventLib.listener({
+//                         type: 'node.created',
+//                         callback: function (event) {
+//                             log.info(JSON.stringify(event));
+//                             const id = event.data.nodes[0].id;
+//                             const message = messageLib.getMessage(id);
+//                             log.info('message:' + JSON.stringify(message));
+//                             if (message) {
+//                                 emitter.onNext(message);
+//                             }
+//                         }
+//                     });
+//                 });
+//                 return publisher;
+//             }
+//         }
+//     }
+// });
+
 
 var schema = graphQlLib.createSchema({
     query: rootQueryType,

@@ -1,8 +1,7 @@
 function retrieveMessages() {
     document.getElementById('main').innerHTML = '';
 
-    const api = getApi();
-    if (api === 'graphql') {
+    if (useGraphQl()) {
         fetch(config.serviceUrl + '/graphql', {
             method: 'POST',
             body: "{\"query\":\"{messages{authorName content}}\\n\"}"
@@ -27,15 +26,9 @@ function handleRetrievedMessage(message) {
     document.getElementById('main').prepend(messageElement);
 }
 
-function getApi() {
-    return new URL(window.location).searchParams.get('api');
-
-}
-
 function onSend() {
     const message = document.getElementById('message-textarea').value;
     document.getElementById('message-textarea').value = '';
-
 
     fetch(config.serviceUrl + '/send-message', {
         method: 'POST',
@@ -63,31 +56,35 @@ function checkAuthenticated() {
 }
 
 function createWebSocket() {
-    const socket = new WebSocket('ws://localhost:8080' + config.appUrl + '/ws'); //TODO
-    socket.addEventListener('message', function (event) {
-        console.log('WS - Event received: ', event.data);
-        handleRetrievedMessage(JSON.parse(event.data));
-    });
+    const useGraphQlResult = useGraphQl();
+    const socket = new WebSocket('ws://localhost:8080' + config.appUrl + (useGraphQlResult ? '/ws-graphql' : '/ws-rest'));
+
+    if (useGraphQlResult) {
+        socket.addEventListener('open', function (event) {
+            console.log("WS - GraphQL - Web socket opened");
+
+            var query = 'subscription MessageSubscription { messages { authorName content } }';
+            var graphqlMsg = {
+                query: query,
+                variables: {}
+            };
+            socket.send(JSON.stringify(graphqlMsg));
+        });
+
+        socket.addEventListener('message', function (event) {
+            console.log('"WS GraphQL - Event received:', event.data);
+            handleRetrievedMessage(JSON.parse(event.data).data.messages);
+        });
+    } else {
+        socket.addEventListener('message', function (event) {
+            console.log('WS Rest - Event received: ', event.data);
+            handleRetrievedMessage(JSON.parse(event.data));
+        });
+    }
 }
 
-function createGraphQLWebSocket() {
-    const socket = new WebSocket('ws://localhost:8080' + config.appUrl + '/ws-graphql'); //TODO
-
-    socket.addEventListener('open', function (event) {
-        console.log("WS - GraphQL - Web socket opened");
-
-        var query = 'subscription MessageSubscription { messages { authorName content } }';
-        var graphqlMsg = {
-            query: query,
-            variables: {}
-        };
-        socket.send(JSON.stringify(graphqlMsg));
-    });
-
-    socket.addEventListener('message', function (event) {
-        console.log('"WS - GraphQL - Event received:', event.data);
-        handleRetrievedMessage(JSON.parse(event.data).data.messages);
-    });
+function useGraphQl() {
+    return new URL(window.location).searchParams.get('api') === 'graphql';
 }
 
 document.getElementById('send-button')
@@ -101,11 +98,8 @@ document.getElementById('message-textarea')
     });
 
 checkAuthenticated();
+createWebSocket();
 
-if (getApi() === 'graphql') {
-    createGraphQLWebSocket();
-} else {
-    createWebSocket();
-}
+
 
 

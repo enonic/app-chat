@@ -41,7 +41,7 @@ router.get('/sw.js', function () {
     };
 });
 
-router.get('/ws', function (req) {
+router.get('/ws-rest', function (req) {
     return {
         webSocket: {
             data: {
