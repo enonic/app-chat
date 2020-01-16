@@ -33,7 +33,7 @@ eventLib.listener({
         const message = messageLib.getMessage(id);
         if (message) {
             const publishers = Java.synchronized(() => messagePublishers.slice(0), messagePublishers)();
-            log.debug('Event - Sending to [' + publishers.length + '] publishes: ' + JSON.stringify(message));
+            log.debug('Event - Sending to [' + publishers.length + '] publishers: ' + JSON.stringify(message));
             publishers.forEach(publisher => publisher.onNext(message));
         }
     }
