@@ -24,7 +24,7 @@ var rootQueryType = graphQlLib.createObjectType({
     }
 });
 
-// var messagePublishers = [];
+// var emitters = [];
 // eventLib.listener({
 //     type: 'node.created',
 //     callback: function (event) {
@@ -32,13 +32,14 @@ var rootQueryType = graphQlLib.createObjectType({
 //         const id = event.data.nodes[0].id;
 //         const message = messageLib.getMessage(id);
 //         if (message) {
-//             const publishers = Java.synchronized(() => messagePublishers.slice(0), messagePublishers)();
-//             log.debug('Event - Sending to [' + publishers.length + '] publishers: ' + JSON.stringify(message));
-//             publishers.forEach(publisher => publisher.onNext(message));
+//             const currentEmitters = Java.synchronized(() => emitters.slice(0), emitters)();
+//             log.debug('Event - Sending to [' + currentEmitters.length + '] publishers: ' + JSON.stringify(message));
+//             currentEmitters.forEach(emitter => emitter.onNext(message));
 //         }
 //     }
 // });
-
+//
+//
 // var rootSubscriptionType = graphQlLib.createObjectType({
 //     name: 'Subscription',
 //     fields: {
@@ -46,16 +47,26 @@ var rootQueryType = graphQlLib.createObjectType({
 //             type: messageType,
 //             resolve: () => {
 //                 log.debug('Creating publisher');
-//                 const publisher = graphQlLib.createSingleSubscriberPublisher();
-//                 Java.synchronized(() => messagePublishers.push(publisher), messagePublishers)();
+//                 const publisher = graphQlLib.createOnSubscribePublisher({
+//                     onSubscribe: emitter => {
+//                         Java.synchronized(() => emitters.push(emitter), emitters)();
+//                     },
+//                     onCancel: (emitter) => {
+//                         Java.synchronized(() => {
+//                             let index = emitters.indexOf(emitter);
+//                             if (index !== -1) {
+//                                 emitters.splice(index, 1);
+//                             }
+//                         }, emitters)();
+//                     }
+//                 });
 //                 return publisher;
 //             }
 //         }
 //     }
 // });
 
-
-var emitters = [];
+const processor = graphQlLib.createPublishProcessor();
 eventLib.listener({
     type: 'node.created',
     callback: function (event) {
@@ -63,9 +74,8 @@ eventLib.listener({
         const id = event.data.nodes[0].id;
         const message = messageLib.getMessage(id);
         if (message) {
-            const currentEmitters = Java.synchronized(() => emitters.slice(0), emitters)();
-            log.debug('Event - Sending to [' + currentEmitters.length + '] publishers: ' + JSON.stringify(message));
-            currentEmitters.forEach(emitter => emitter.onNext(message));
+            log.debug('Event - Sending to subject: ' + JSON.stringify(message));
+            processor.onNext(message);
         }
     }
 });
@@ -77,52 +87,11 @@ var rootSubscriptionType = graphQlLib.createObjectType({
         messages: {
             type: messageType,
             resolve: () => {
-                log.debug('Creating publisher');
-                const publisher = graphQlLib.createOnSubscribePublisher({
-                    onSubscribe: emitter => {
-                        Java.synchronized(() => emitters.push(emitter), emitters)();
-                    },
-                    onCancel: (emitter) => {
-                        Java.synchronized(() => {
-                            let index = emitters.indexOf(emitter);
-                            if (index !== -1) {
-                                emitters.splice(index, 1);
-                            }
-                        }, emitters)();
-                    }
-                });
-                return publisher;
+                return processor;
             }
         }
     }
 });
-
-
-// var rootSubscriptionType = graphQlLib.createObjectType({
-//     name: 'Subscription',
-//     fields: {
-//         messages: {
-//             type: messageType,
-//             resolve: () => {
-//                 const publisher = graphQlLib.createOnSubscribePublisher(emitter => {
-//                     eventLib.listener({
-//                         type: 'node.created',
-//                         callback: function (event) {
-//                             log.info(JSON.stringify(event));
-//                             const id = event.data.nodes[0].id;
-//                             const message = messageLib.getMessage(id);
-//                             log.info('message:' + JSON.stringify(message));
-//                             if (message) {
-//                                 emitter.onNext(message);
-//                             }
-//                         }
-//                     });
-//                 });
-//                 return publisher;
-//             }
-//         }
-//     }
-// });
 
 
 var schema = graphQlLib.createSchema({
