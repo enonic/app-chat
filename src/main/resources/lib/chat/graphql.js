@@ -78,11 +78,18 @@ var rootSubscriptionType = graphQlLib.createObjectType({
             type: messageType,
             resolve: () => {
                 log.debug('Creating publisher');
-                const publisher = graphQlLib.createOnSubscribePublisher(emitter => {
-                    Java.synchronized(() => emitters.push(emitter), emitters)();
-                    // emitter.setDisposable(() => {
-                    //
-                    // });
+                const publisher = graphQlLib.createOnSubscribePublisher({
+                    onSubscribe: emitter => {
+                        Java.synchronized(() => emitters.push(emitter), emitters)();
+                    },
+                    onCancel: (emitter) => {
+                        Java.synchronized(() => {
+                            let index = emitters.indexOf(emitter);
+                            if (index !== -1) {
+                                emitters.splice(index, 1);
+                            }
+                        }, emitters)();
+                    }
                 });
                 return publisher;
             }
